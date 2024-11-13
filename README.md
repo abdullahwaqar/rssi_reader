@@ -85,6 +85,8 @@ If you prefer to build the binary yourself or want to modify the source code, fo
 
 ## Usage
 
+> Note: Connect to raw websocket at ws://<IP>:<PORT>/ws
+
 ### Running the Binary
 
 To start the **rssi_reader** server, execute the binary. You can specify the port using the `--port` flag or use the default port `8080`.
