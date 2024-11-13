@@ -20,23 +20,16 @@
 
 The architecture of **rssi_reader** comprises two main components:
 
-1. **Server**:
-   - **Language**: Go (Golang)
-   - **Functionality**:
-     - Reads RSSI data from `/proc/net/wireless` at regular intervals.
-     - Broadcasts the collected RSSI data to all connected WebSocket clients.
-     - Serves the client web interface (`/monitor`) for visualization.
-   - **Key Features**:
-     - Supports dynamic configuration via command-line flags.
-     - Handles multiple concurrent WebSocket connections efficiently.
-     - Provides real-time updates with minimal latency.
+**Server**:
 
-2. **Client**:
-   - **Technology**: HTML, CSS, JavaScript
-   - **Functionality**:
-     - Connects to the server via WebSockets to receive live RSSI data.
-     - Displays the data in a structured table format for easy monitoring.
-     - Offers a clean and responsive user interface for optimal user experience.
+- **Language**: Go (Golang)
+- **Functionality**:
+  - Reads RSSI data from `/proc/net/wireless` at regular intervals.
+  - Broadcasts the collected RSSI data to all connected WebSocket clients.
+  - Serves the client web interface (`/monitor`) for visualization.
+- **Key Features**:
+  - Handles multiple concurrent WebSocket connections efficiently.
+  - Provides real-time updates with minimal latency.
 
 ## Installation
 
