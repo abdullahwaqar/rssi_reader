@@ -157,3 +157,202 @@ Once the server is running, you can access the web-based client interface to mon
 3. **Developer Tools (Optional):**
 
    For debugging or advanced usage, you can open the browser's developer tools (`F12` or `Ctrl+Shift+I`) to monitor console logs and network activity.
+
+## Automated Installation Using `install.sh`
+
+To simplify the deployment process of **rssi_reader**, an `install.sh` script is provided. This script automates the following tasks:
+
+1. **Moves the binary to `/usr/local/bin`.**
+2. **Creates a systemd service file if it doesn't exist.**
+3. **Enables and starts/restarts the service.**
+
+### **Prerequisites**
+
+Before running the installation script, ensure you have the following:
+
+- **Compiled Binary:** Ensure you have the `rssi_reader_armv7` binary ready in your current directory. If you haven't compiled it yet, refer to the [Building from Source](#building-from-source) section above.
+- **Root or Sudo Access:** The script requires administrative privileges to move binaries to system directories and create systemd service files.
+
+### **Step-by-Step Installation**
+
+Follow these steps to install and set up **rssi_reader** using the `install.sh` script:
+
+#### **1. Make the `install.sh` Script Executable**
+
+Ensure the installation script has the necessary execute permissions:
+
+```bash
+chmod +x install.sh
+```
+
+#### **2. Run the Installation Script**
+
+Execute the `install.sh` script with root privileges to perform the installation:
+
+```bash
+sudo ./install.sh
+```
+
+**Note:** Running the script without `sudo` or as a non-root user will result in permission errors.
+
+#### **3. Installation Script Actions**
+
+The `install.sh` script performs the following actions:
+
+1. **Binary Installation:**
+   - Moves the `rssi_reader_armv7` binary to `/usr/local/bin/rssi_reader`.
+   - Sets the executable permissions.
+   - Changes ownership of the binary to the user executing the script.
+
+2. **Service Setup:**
+   - Creates a systemd service file at `/etc/systemd/system/rssi_reader.service` if it doesn't already exist.
+   - Configures the service to run under the current user.
+   - Sets the service to start on system boot.
+   - Starts or restarts the service based on its current state.
+
+3. **Systemd Configuration:**
+   - Reloads the systemd daemon to recognize the new service.
+   - Enables the service to start automatically at boot.
+   - Starts or restarts the service to apply any new configurations.
+
+#### **4. Verify the Installation**
+
+After running the installation script, perform the following checks to ensure everything is set up correctly:
+
+##### **a. Check Service Status**
+
+Verify that the **rssi_reader** service is active and running:
+
+```bash
+systemctl status rssi_reader.service
+```
+
+**Expected Output:**
+
+```
+● rssi_reader.service - RSSI Reader WebSocket Server
+     Loaded: loaded (/etc/systemd/system/rssi_reader.service; enabled; vendor preset: enabled)
+     Active: active (running) since Thu 2024-04-27 12:00:00 UTC; 5s ago
+   Main PID: 1234 (rssi_reader)
+      Tasks: 2 (limit: 4915)
+     Memory: 1.2M
+     CGroup: /system.slice/rssi_reader.service
+             └─1234 /usr/local/bin/rssi_reader --port=8723
+```
+
+##### **b. Access the Client Interface**
+
+Open your web browser and navigate to the client interface to start monitoring RSSI data:
+
+```
+http://<Raspberry_Pi_IP>:8723/monitor
+```
+
+**Replace `<Raspberry_Pi_IP>`** with the actual IP address of your Raspberry Pi or server. If you specified a different port during installation, replace `8080` with your chosen port number.
+
+**Example:**
+
+```
+http://192.168.1.100:8723/monitor
+```
+
+##### **c. Verify Real-Time Data**
+
+- **Status Indicator:** Should display "Connected to WebSocket."
+- **RSSI Table:** Should dynamically update with the latest RSSI values from your wireless interfaces.
+
+#### **5. Customizing the Installation**
+
+By default, the installation script sets the server to listen on port `8080`. To customize the port, you can modify the `PORT` variable within the `install.sh` script before running it.
+
+**Example: Setting Port to `8723`**
+
+1. **Edit the `install.sh` Script:**
+
+   Open the script in your preferred text editor:
+
+   ```bash
+   nano install.sh
+   ```
+
+2. **Modify the `PORT` Variable:**
+
+   Locate the following line and change `8723` to your desired port number (e.g., `8000`):
+
+   ```bash
+   PORT="8723"  # Default port; can be modified as needed
+   ```
+
+3. **Save and Exit:**
+
+   - **In `nano`:** Press `Ctrl + O` to save, then `Ctrl + X` to exit.
+
+4. **Run the Installation Script Again:**
+
+   ```bash
+   sudo ./install.sh
+   ```
+
+5. **Access the Client Interface on the New Port:**
+
+   ```
+   http://<Raspberry_Pi_IP>:9090/monitor
+   ```
+
+#### **6. Uninstallation (Optional)**
+
+If you need to remove **rssi_reader** from your system, follow these steps:
+
+1. **Stop the Service:**
+
+   ```bash
+   sudo systemctl stop rssi_reader.service
+   ```
+
+2. **Disable the Service from Starting on Boot:**
+
+   ```bash
+   sudo systemctl disable rssi_reader.service
+   ```
+
+3. **Remove the Service File:**
+
+   ```bash
+   sudo rm /etc/systemd/system/rssi_reader.service
+   ```
+
+4. **Reload systemd Daemon:**
+
+   ```bash
+   sudo systemctl daemon-reload
+   ```
+
+5. **Remove the Binary:**
+
+   ```bash
+   sudo rm /usr/local/bin/rssi_reader
+   ```
+
+6. **Verify Removal:**
+
+   ```bash
+   systemctl status rssi_reader.service
+   ```
+
+   **Expected Output:**
+
+   ```
+   Unit rssi_reader.service could not be found.
+   ```
+
+#### **7. Troubleshooting**
+
+If you encounter any issues during or after installation, consider the following steps:
+
+##### **a. Check Service Logs**
+
+View real-time logs to identify any runtime errors:
+
+```bash
+journalctl -u rssi_reader.service -f
+```
