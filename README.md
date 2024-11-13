@@ -66,7 +66,7 @@ If you prefer to build the binary yourself or want to modify the source code, fo
 
 2. **Build the Binary**:
 
-   Ensure you have [Go](https://golang.org/dl/) installed (version 1.16 or later recommended).
+   Ensure you have [Go](https://golang.org/dl/) installed.
 
    ```bash
    go build -o rssi_reader
