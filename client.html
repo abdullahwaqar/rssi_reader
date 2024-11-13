@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Wi-Fi RSSI Monitor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #status {
+            margin-bottom: 20px;
+        }
+
+        #rssiTable {
+            border-collapse: collapse;
+            width: 50%;
+        }
+
+        #rssiTable th,
+        #rssiTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #rssiTable th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Wi-Fi RSSI Monitor</h1>
+    <div id="status">Connecting to WebSocket...</div>
+    <table id="rssiTable">
+        <thead>
+            <tr>
+                <th>Interface</th>
+                <th>RSSI (dBm)</th>
+            </tr>
+        </thead>
+        <tbody id="rssiBody">
+        </tbody>
+    </table>
+
+    <script>
+        const status = document.getElementById("status");
+        const rssiBody = document.getElementById("rssiBody");
+
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const ws = new WebSocket(`${wsProtocol}://${window.location.host}/ws`);
+
+        ws.onopen = () => {
+            status.textContent = "Connected to WebSocket.";
+            console.log("WebSocket connection opened.");
+        };
+
+        ws.onmessage = (event) => {
+            console.log("Received data:", event.data);
+            try {
+                const data = JSON.parse(event.data);
+                rssiBody.innerHTML = ""; // Clear existing data
+                for (const [iface, rssi] of Object.entries(data)) {
+                    const row = document.createElement("tr");
+                    const ifaceCell = document.createElement("td");
+                    const rssiCell = document.createElement("td");
+
+                    ifaceCell.textContent = iface;
+                    rssiCell.textContent = rssi;
+
+                    row.appendChild(ifaceCell);
+                    row.appendChild(rssiCell);
+                    rssiBody.appendChild(row);
+                }
+            } catch (err) {
+                console.error("Error parsing RSSI data:", err);
+            }
+        };
+
+        ws.onclose = () => {
+            status.textContent = "WebSocket connection closed.";
+            console.log("WebSocket connection closed.");
+        };
+
+        ws.onerror = (err) => {
+            console.error("WebSocket error:", err);
+            status.textContent = "WebSocket error occurred.";
+        };
+    </script>
+</body>
+
+</html>
