@@ -53,14 +53,6 @@ For convenience, a precompiled binary for ARMv7 architecture is provided. This i
    chmod +x rssi_reader_armv7
    ```
 
-3. **Move the Binary to a Suitable Location** (Optional):
-
-   You can move the binary to `/usr/local/bin` for easier access.
-
-   ```bash
-   sudo mv rssi_reader_armv7 /usr/local/bin/rssi_reader
-   ```
-
 ### Building from Source
 
 If you prefer to build the binary yourself or want to modify the source code, follow these steps:
@@ -82,11 +74,14 @@ If you prefer to build the binary yourself or want to modify the source code, fo
 
    This command compiles the source code and generates an executable named `rssi_reader` in the current directory.
 
-3. **Move the Binary to a Suitable Location** (Optional):
+3. **Building for arm based arch**:
+    This is used to build for arm based processors, in this case for Raspberry Pi.
 
-   ```bash
-   sudo mv rssi_reader /usr/local/bin/
-   ```
+    ```
+    make arm
+    ```
+
+    This will output the binary in a `bin` folder.
 
 ## Usage
 
