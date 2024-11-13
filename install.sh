@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # install.sh - Installation script for rssi_reader
-
 set -e
 
 # Variables
@@ -10,6 +9,7 @@ INSTALL_PATH="/usr/local/bin/rssi_reader"
 SERVICE_NAME="rssi_reader.service"
 SERVICE_PATH="/etc/systemd/system/$SERVICE_NAME"
 PORT="8723"
+CLIENT_HTML="client.html"
 
 echo_info() {
     echo -e "\e[32m[INFO]\e[0m $1"
@@ -45,6 +45,12 @@ if [[ ! -f "$BINARY_NAME" ]]; then
     exit 1
 fi
 
+# Check if client.html exists in the current directory
+if [[ ! -f "$CLIENT_HTML" ]]; then
+    echo_error "Client HTML file '$CLIENT_HTML' not found in the current directory."
+    exit 1
+fi
+
 # Move the binary to /usr/local/bin
 echo_info "Moving binary to $INSTALL_PATH."
 mv "$BINARY_NAME" "$INSTALL_PATH"
@@ -54,6 +60,13 @@ chmod +x "$INSTALL_PATH"
 
 # Change ownership to the service user
 chown "$SERVICE_USER":"$SERVICE_USER" "$INSTALL_PATH"
+
+# Copy client.html to /usr/local/bin/client.html
+echo_info "Copying '$CLIENT_HTML' to /usr/local/bin/client.html."
+cp "$CLIENT_HTML" "/usr/local/bin/client.html"
+
+# Ensure the client.html has the correct ownership
+chown "$SERVICE_USER":"$SERVICE_USER" "/usr/local/bin/client.html"
 
 # Create the systemd service file if it doesn't exist
 if [[ -f "$SERVICE_PATH" ]]; then
@@ -69,6 +82,7 @@ After=network.target
 Type=simple
 User=$SERVICE_USER
 Group=$SERVICE_USER
+WorkingDirectory=/usr/local/bin
 ExecStart=$INSTALL_PATH --port=$PORT
 Restart=on-failure
 RestartSec=5s
